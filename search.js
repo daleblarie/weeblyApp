@@ -8,19 +8,22 @@
 function debounce(func, wait) {
   let timeout;
   return function returnFunc(...args) {
-    const context = this;
-    const later = function later() {
-      timeout = null;
-      func.apply(context, args);
-    };
-
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = setTimeout(func.bind(this, ...args), wait);
   };
 }
+function searchSuccessHandler(data) {
+  console.log(data);
+  // pretend it gave good stuff
+  // create array of data and display it
+  // make an array thats like 10 items long randomly select 3 of them and inject them into the page
+  // clear the list on the page before displaying
+}
 
-const ourFunc = function ourFunc() {
-  console.log('hihihi there');
+const sendSearch = function sendSearch(event) {
+  const currentQuery = event.target.value;
+  $.ajax(`example.com?query=${currentQuery}`, { success: searchSuccessHandler });
 };
+const debouncedSendSearch = debounce(sendSearch, 1000);
 
-$.keydown(ourFunc);
+$('#searchbox').keydown(debouncedSendSearch);
